@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="LocalCheck AI">
+  <rect width="64" height="64" rx="16" fill="#2867f0"/>
+  <path d="M21 17h8v24h15v7H21V17Z" fill="white"/>
+  <path d="m39 21 4 4-11 11-5-5 4-4 1 1 7-7Z" fill="#9ed0ff"/>
+</svg>
