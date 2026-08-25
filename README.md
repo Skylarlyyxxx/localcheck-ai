@@ -2,6 +2,8 @@
 
 An automated, market-specific localization readiness audit for ecommerce websites.
 
+**[Live Demo](https://localcheck-ai.vercel.app/)** · **[Product Case Study (中文)](docs/product-case-study.md)**
+
 ## Problem
 
 When an ecommerce store enters a new market, familiar signals such as local currency, payment methods, language, trust content, and policy links can be easy to miss. Those gaps can create friction before a shopper reaches checkout.
@@ -33,6 +35,8 @@ LocalCheck evaluates six homepage signal areas:
 - Language & Cultural Readiness
 
 The MVP combines deterministic website signal detection with a transparent scoring framework.
+
+The rules are intentionally conservative: a detected keyword is treated as a homepage signal, not proof that a payment method works or that a store is compliant.
 
 ## Product Flow
 
