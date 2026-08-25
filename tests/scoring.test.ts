@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { extractSignals } from "../src/lib/signal-extraction.ts";
 import { scoreAnalysis } from "../src/lib/scoring.ts";
+import { parseSemanticReview } from "../src/lib/semantic-analysis.ts";
 
 function analyze(html: string, market: "us" | "de" | "jp") {
   return scoreAnalysis("fixture-store.test", market, extractSignals(html));
@@ -41,4 +42,10 @@ test("Japanese fixture detects Japanese language, JPY symbol, and local payment 
 test("the same US fixture receives a lower score for Germany than the United States", () => {
   const html = `<!doctype html><html lang="en"><head><title>US store</title></head><body><p>USD $49 PayPal Visa Mastercard</p></body></html>`;
   assert.ok(analyze(html, "us").overallScore > analyze(html, "de").overallScore);
+});
+
+test("semantic review accepts only complete, bounded findings", () => {
+  const review = parseSemanticReview({ summary: "The English homepage is not tailored to German shoppers.", findings: [{ title: "English-only messaging", evidence: "The main call to action is in English.", recommendation: "Localize key navigation and calls to action.", priority: "Critical" }, { title: "Incomplete", evidence: "Missing a recommendation." }] });
+  assert.equal(review?.findings.length, 1);
+  assert.equal(review?.findings[0]?.priority, "Critical");
 });

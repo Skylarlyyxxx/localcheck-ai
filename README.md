@@ -36,6 +36,8 @@ LocalCheck evaluates six homepage signal areas:
 
 The MVP combines deterministic website signal detection with a transparent scoring framework.
 
+When `GEMINI_API_KEY` is configured, a separate optional semantic-review layer can add bounded language and cultural-readiness observations. It does not change the deterministic six-dimension score, and the report falls back safely if the service is unavailable.
+
 The rules are intentionally conservative: a detected keyword is treated as a homepage signal, not proof that a payment method works or that a store is compliant.
 
 ## Product Flow
@@ -52,6 +54,10 @@ The current MVP evaluates signals available on the public homepage only. Dynamic
 - TypeScript
 - Cheerio
 - Tailwind CSS
+
+## Optional LLM Setup
+
+The application runs fully without an LLM key. To enable the optional server-side semantic review, create an API key in [Google AI Studio](https://aistudio.google.com/) and add `GEMINI_API_KEY` to `.env.local` for local development or to Vercel Project Settings → Environment Variables for production. Never commit this key. Gemini's availability and free-tier limits are account- and region-dependent; check the official pricing page before enabling it.
 
 ## Quality Checks
 

@@ -1,5 +1,6 @@
 import { Market, scoreAnalysis } from "@/lib/scoring";
 import { extractSignals } from "@/lib/signal-extraction";
+import { analyzeSemantics } from "@/lib/semantic-analysis";
 import { lookup } from "node:dns/promises";
 
 const MAX_HTML_BYTES = 1_000_000;
@@ -74,7 +75,10 @@ export async function POST(request: Request) {
     const market = (["us", "de", "jp"].includes(String(body.market).toLowerCase()) ? String(body.market).toLowerCase() : "us") as Market;
     const { html, finalUrl } = await fetchHomepage(body.url);
     const site = finalUrl.hostname;
-    return Response.json({ success: true, report: scoreAnalysis(site, market, extractSignals(html)) });
+    const signals = extractSignals(html);
+    const report = scoreAnalysis(site, market, signals);
+    report.semanticReview = await analyzeSemantics(html, market, signals);
+    return Response.json({ success: true, report });
   } catch {
     return Response.json({ success: false, error: "We couldn't access this website." }, { status: 422 });
   }

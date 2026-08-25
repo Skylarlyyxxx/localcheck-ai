@@ -1,11 +1,12 @@
 import { marketConfigs } from "./markets.ts";
 import type { Market } from "./markets.ts";
+import type { SemanticReview } from "./semantic-analysis.ts";
 
 export type { Market } from "./markets.ts";
 export type AnalysisSignals = { basic: { title: string | null; metaDescription: string | null; htmlLang: string | null; h1: string | null; canonicalUrl: string | null }; currencySignals: string[]; foreignCurrencySignals: string[]; paymentsDetected: string[]; trustSignals: string[]; policySignals: string[]; seoSignals: { title: boolean; metaDescription: boolean; h1: boolean; htmlLang: boolean; canonical: boolean }; languageSignals: string[] };
 export type DimensionResult = { name: string; score: number; detectedSignals: string[]; missingSignals: string[]; whyItMatters: string };
 export type ReportItem = { category: "Critical" | "Recommended" | "Good"; title: string; evidence: string; recommendation: string };
-export type AnalysisReport = { site: string; market: Market; overallScore: number; rating: string; summary: string; dimensions: DimensionResult[]; priorities: ReportItem[]; strengths: ReportItem[]; signals: AnalysisSignals };
+export type AnalysisReport = { site: string; market: Market; overallScore: number; rating: string; summary: string; dimensions: DimensionResult[]; priorities: ReportItem[]; strengths: ReportItem[]; signals: AnalysisSignals; semanticReview: SemanticReview | null };
 
 const trustKeys = ["reviews", "returns", "shipping", "contact", "faq", "secure payment"];
 const seoLabels: Record<string, string> = { title: "Page title", metaDescription: "Meta description", h1: "H1 heading", htmlLang: "HTML language", canonical: "Canonical URL" };
@@ -70,5 +71,5 @@ export function scoreAnalysis(site: string, market: Market, signals: AnalysisSig
   if (trustDetected.length >= 4) strengths.push({ category: "Good", title: "Strong trust-signal coverage on the homepage", evidence: `Detected: ${trustDetected.join(", ")}.`, recommendation: "Maintain this visibility as the site evolves." });
   if (seoDetected.length >= 4) strengths.push({ category: "Good", title: "Core SEO signals are present", evidence: `Detected: ${seoDetected.join(", ")}.`, recommendation: "Review this metadata when creating market-specific pages." });
   if (!strengths.length) strengths.push({ category: "Good", title: "Homepage analysis completed", evidence: "LocalCheck detected the available public homepage signals.", recommendation: "Use the priority items above to guide the next localization improvements." });
-  return { site, market, overallScore, rating, summary: createSummary(overallScore, config.displayName, priorities), dimensions, priorities: priorities.slice(0, 4), strengths: strengths.slice(0, 3), signals };
+  return { site, market, overallScore, rating, summary: createSummary(overallScore, config.displayName, priorities), dimensions, priorities: priorities.slice(0, 4), strengths: strengths.slice(0, 3), signals, semanticReview: null };
 }
