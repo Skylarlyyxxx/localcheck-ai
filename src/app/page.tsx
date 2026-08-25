@@ -63,7 +63,7 @@ export default function Home() {
   }
 
   if (error) {
-    return <main className="loading-screen"><div className="loading-card error-card"><p className="eyebrow">ANALYSIS UNAVAILABLE</p><h1>Analysis unavailable</h1><p className="error-message">{error}</p><p className="loading-note">Try another website or use our Demo Report.</p><button className="primary-button" type="button" onClick={beginDemo}>Try Demo</button></div></main>;
+    return <main className="loading-screen"><div className="loading-card error-card" role="alert"><p className="eyebrow">ANALYSIS UNAVAILABLE</p><h1>Analysis unavailable</h1><p className="error-message">{error}</p><p className="loading-note">Try another website or use our Demo Report.</p><button className="primary-button" type="button" onClick={beginDemo}>Try Demo</button></div></main>;
   }
 
   if (isLoading) {
@@ -73,7 +73,7 @@ export default function Home() {
           <div className="loading-orb" aria-hidden="true" />
           <p className="eyebrow">LOCALCHECK AI</p>
           <h1>Auditing your global readiness</h1>
-          <p className="loading-status">{loadingSteps[step]}</p>
+          <p className="loading-status" aria-live="polite">{loadingSteps[step]}</p>
           <div className="progress-track" aria-label="Audit progress">
             <div className="progress-bar" style={{ width: `${((step + 1) / loadingSteps.length) * 100}%` }} />
           </div>
@@ -107,6 +107,8 @@ export default function Home() {
             <span>Website URL</span>
             <input
               type="text"
+              inputMode="url"
+              autoComplete="url"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
               placeholder="https://yourstore.com"

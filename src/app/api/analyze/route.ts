@@ -2,15 +2,41 @@ import { Market, scoreAnalysis } from "@/lib/scoring";
 import { extractSignals } from "@/lib/signal-extraction";
 import { lookup } from "node:dns/promises";
 
-const MAX_HTML_LENGTH = 1_000_000;
+const MAX_HTML_BYTES = 1_000_000;
 
 export const runtime = "nodejs";
 
 function isPrivateAddress(address: string) {
   const value = address.toLowerCase();
-  if (value === "::1" || value === "0:0:0:0:0:0:0:1" || value.startsWith("fc") || value.startsWith("fd") || value.startsWith("fe80:" )) return true;
+  if (value === "::" || value === "::1" || value === "0:0:0:0:0:0:0:1" || value.startsWith("::ffff:") || value.startsWith("fc") || value.startsWith("fd") || value.startsWith("fe80:")) return true;
   const parts = value.split(".").map(Number);
-  return parts.length === 4 && (parts[0] === 10 || parts[0] === 127 || parts[0] === 0 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || (parts[0] === 192 && parts[1] === 168));
+  return parts.length === 4 && (parts[0] === 0 || parts[0] === 10 || parts[0] === 127 || parts[0] >= 224 || (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || (parts[0] === 192 && (parts[1] === 0 || parts[1] === 168)) || (parts[0] === 198 && (parts[1] === 18 || parts[1] === 19)));
+}
+
+async function readHtml(response: Response) {
+  const declaredLength = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_HTML_BYTES) throw new Error("page-too-large");
+  if (!response.body) throw new Error("unavailable");
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let receivedBytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    receivedBytes += value.byteLength;
+    if (receivedBytes > MAX_HTML_BYTES) {
+      await reader.cancel();
+      throw new Error("page-too-large");
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(receivedBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
 }
 
 async function validateUrl(value: string) {
@@ -34,7 +60,7 @@ async function fetchHomepage(input: string) {
     }
     if (!response.ok) throw new Error("unavailable");
     if (!response.headers.get("content-type")?.toLowerCase().includes("html")) throw new Error("not-html");
-    const html = (await response.text()).slice(0, MAX_HTML_LENGTH);
+    const html = await readHtml(response);
     if (!html.trim()) throw new Error("unavailable");
     return { html, finalUrl: url };
   }

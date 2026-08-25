@@ -63,6 +63,8 @@ npm run lint
 npm run build
 ```
 
+GitHub Actions runs the same checks for pushes and pull requests to `main`.
+
 ## Future Roadmap
 
 - LLM semantic language analysis
