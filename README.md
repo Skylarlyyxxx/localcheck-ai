@@ -53,6 +53,16 @@ The current MVP evaluates signals available on the public homepage only. Dynamic
 - Cheerio
 - Tailwind CSS
 
+## Quality Checks
+
+The rule engine is covered by fixed HTML fixtures for the US, Germany, and Japan. Run the checks locally with:
+
+```bash
+npm run test
+npm run lint
+npm run build
+```
+
 ## Future Roadmap
 
 - LLM semantic language analysis

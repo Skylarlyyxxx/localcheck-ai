@@ -1,6 +1,7 @@
-import { Market, marketConfigs } from "@/lib/markets";
+import { marketConfigs } from "./markets.ts";
+import type { Market } from "./markets.ts";
 
-export type { Market } from "@/lib/markets";
+export type { Market } from "./markets.ts";
 export type AnalysisSignals = { basic: { title: string | null; metaDescription: string | null; htmlLang: string | null; h1: string | null; canonicalUrl: string | null }; currencySignals: string[]; foreignCurrencySignals: string[]; paymentsDetected: string[]; trustSignals: string[]; policySignals: string[]; seoSignals: { title: boolean; metaDescription: boolean; h1: boolean; htmlLang: boolean; canonical: boolean }; languageSignals: string[] };
 export type DimensionResult = { name: string; score: number; detectedSignals: string[]; missingSignals: string[]; whyItMatters: string };
 export type ReportItem = { category: "Critical" | "Recommended" | "Good"; title: string; evidence: string; recommendation: string };
@@ -21,7 +22,7 @@ function createSummary(score: number, marketName: string, priorities: ReportItem
 export function scoreAnalysis(site: string, market: Market, signals: AnalysisSignals): AnalysisReport {
   const config = marketConfigs[market];
   const currencyDetected = signals.currencySignals.filter((signal) => config.currencySignals.some(({ label }) => label === signal));
-  const currencyMissing = config.currencySignals.map(({ label }) => label).filter((label) => !currencyDetected.includes(label));
+  const currencyMissing = currencyDetected.length ? [] : [`${config.currency} currency signal`];
   const foreignCurrencyDetected = signals.foreignCurrencySignals.some((signal) => market === "jp" ? signal !== "￥" : true);
   const currency = Math.max(0, Math.min(85, 15 + (currencyDetected.includes(config.currency) ? 40 : 0) + (currencyDetected.some((signal) => signal !== config.currency) ? 25 : 0) - (foreignCurrencyDetected ? 10 : 0)));
 
