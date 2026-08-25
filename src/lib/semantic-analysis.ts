@@ -65,7 +65,9 @@ export async function analyzeSemantics(html: string, market: Market, signals: An
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2, maxOutputTokens: 700 } }),
     });
     if (!response.ok) {
-      console.warn(`[LocalCheck] Gemini semantic review unavailable: API returned ${response.status}.`);
+      const error = await response.json().catch(() => null) as { error?: { message?: unknown } } | null;
+      const message = cleanText(error?.error?.message, 240);
+      console.warn(`[LocalCheck] Gemini semantic review unavailable: API returned ${response.status}${message ? ` — ${message}` : ""}.`);
       return null;
     }
     const payload = await response.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
