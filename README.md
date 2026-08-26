@@ -10,7 +10,7 @@ When an ecommerce store enters a new market, familiar signals such as local curr
 
 ## Solution
 
-**URL + Target Market → Automated Audit → Localization Report**
+**URL + Target Market → Automated Audit → Rule-based Score + Optional LLM Review → Localization Report**
 
 LocalCheck AI scans the public homepage of a store, detects transparent rule-based signals, and turns them into an explainable localization report.
 
@@ -20,6 +20,7 @@ LocalCheck AI scans the public homepage of a store, detects transparent rule-bas
 - Localization Score across six dimensions
 - Evidence-first diagnosis with detected and missing signals
 - Prioritized recommendations and positive practices
+- Optional LLM language and cultural-readiness review
 - Homepage-only scope notice
 - Demo fallback when a website cannot be accessed
 
@@ -54,6 +55,7 @@ The current MVP evaluates signals available on the public homepage only. Dynamic
 - TypeScript
 - Cheerio
 - Tailwind CSS
+- Cloudflare Workers AI (optional Llama semantic review)
 
 ## Optional LLM Setup
 
@@ -73,7 +75,6 @@ GitHub Actions runs the same checks for pushes and pull requests to `main`.
 
 ## Future Roadmap
 
-- LLM semantic language analysis
 - Cultural image analysis
 - Multi-page audits
 - Competitor benchmarking
